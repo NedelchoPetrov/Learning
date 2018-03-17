@@ -52,8 +52,8 @@ class BoardDisplay extends Pad {
     }
 
     @Override
-    protected void setKeyHandler(String event,
-                                 Object receiver, String funcName) {
+    public void setKeyHandler(String event,
+                              Object receiver, String funcName) {
         super.setKeyHandler(event, receiver, funcName);
     }
 

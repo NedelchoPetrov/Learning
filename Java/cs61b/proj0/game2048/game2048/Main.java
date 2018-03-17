@@ -90,6 +90,7 @@ public class Main {
         GetMove:
             while (true) {
                 String key = _game.readKey();
+                System.out.println(key);
 
                 switch (key) {
                 case "Up": case "Down": case "Left": case "Right":
@@ -122,6 +123,13 @@ public class Main {
             return;
         }
         // FIXME?
+        int[] randomTile = _game.getRandomTile();
+        System.out.println(randomTile[0]);
+        System.out.println(randomTile[1]);
+        System.out.println(randomTile[2]);
+
+
+
     }
 
     /** Perform the result of tilting the board toward SIDE.
