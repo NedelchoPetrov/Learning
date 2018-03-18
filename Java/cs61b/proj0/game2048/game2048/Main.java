@@ -80,15 +80,18 @@ public class Main {
         // FIXME?
 
         while (true) {
-            // FIXME?
+            // FIXME? ...Done
 
+            /**Set a random tile at the beginning of the game**/
             setRandomPiece();
+
             if (gameOver()) {
                 // FIXME?
             }
 
         GetMove:
             while (true) {
+                setRandomPiece();
                 String key = _game.readKey();
                 System.out.println(key);
 
@@ -97,8 +100,10 @@ public class Main {
                     if (!gameOver() && tiltBoard(keyToSide(key))) {
                         break GetMove;
                     }
+
                     break;
                 // FIXME?
+                    //here goes The playing code...
                 case "Quit":
                     return false;
                 default:
@@ -113,7 +118,25 @@ public class Main {
      *  possible). */
     boolean gameOver() {
         // FIXME?
-        return true;
+        if (_count == SIZE*SIZE) {
+            for(int row = 0 ; row < SIZE-1; row ++){
+                for(int col = 0; col < SIZE-1; col++){
+
+                    int target = _board[row][col];
+                    int rightOfTarget = _board[row][col+1];
+                    int belowTarget = _board[row+1][col];
+
+                    if(target == rightOfTarget || target == belowTarget){
+                        return true;
+                    }else if (_board[SIZE][SIZE]== _board[SIZE-1][SIZE] || _board[SIZE][SIZE] == _board[SIZE][SIZE-1]){
+                        return true;
+                    }
+                }
+            }
+
+
+        }
+        return false;
     }
 
     /** Add a tile to a random, empty position, choosing a value (2 or
@@ -122,14 +145,21 @@ public class Main {
         if (_count == SQUARES) {
             return;
         }
-        // FIXME?
-        int[] randomTile = _game.getRandomTile();
-        System.out.println(randomTile[0]);
-        System.out.println(randomTile[1]);
-        System.out.println(randomTile[2]);
+        // FIXME? ...Done
 
-
-
+        /** Add a Tile to an empty slot. **/
+        boolean added = false;
+        while(!added) {
+            try {
+                int[] randomTile = _game.getRandomTile();
+                _game.addTile(randomTile[0], randomTile[1], randomTile[2]);
+                added = true;
+                _board[randomTile[1]][randomTile[2]] = randomTile[0];
+                _count++;
+            }catch(IllegalArgumentException badArg){
+                continue;
+            }
+        }
     }
 
     /** Perform the result of tilting the board toward SIDE.
