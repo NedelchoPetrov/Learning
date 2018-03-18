@@ -80,10 +80,10 @@ public class Main {
         // FIXME?
 
         while (true) {
-            // FIXME? ...Done
+            // FIXME?
 
             /**Set a random tile at the beginning of the game**/
-            setRandomPiece();
+            //setRandomPiece();
 
             if (gameOver()) {
                 // FIXME?
@@ -93,7 +93,10 @@ public class Main {
             while (true) {
                 setRandomPiece();
                 String key = _game.readKey();
-                System.out.println(key);
+
+                moveUp(_board);
+                _game.displayMoves();
+                System.out.println(_count);
 
                 switch (key) {
                 case "Up": case "Down": case "Left": case "Right":
@@ -103,7 +106,7 @@ public class Main {
 
                     break;
                 // FIXME?
-                    //here goes The playing code...
+
                 case "Quit":
                     return false;
                 default:
@@ -114,11 +117,52 @@ public class Main {
         }
     }
 
+    /**Executes all possible moves in direction Up.**/
+    void moveUp(int[][] board){
+        for (int col = 0; col < SIZE; col ++){
+            mainloop:
+            for (int row = 0; row < SIZE; row ++){
+                int mainValue = board[row][col];
+                if(mainValue == 0){
+                    for (int i = row + 1; i < SIZE; i++){
+                        int value = board[i][col];
+                        if (value != 0){
+                            _game.moveTile(value, i, col, row, col);
+                            board[i][col] = 0;
+                            board[row][col] = value;
+                            row--;
+                            continue mainloop;
+                        }
+                    }
+                }else{
+                    for (int i = row + 1; i<SIZE; i++){
+                        int value = board[i][col];
+                        if(value == 0){
+                            continue;
+                        }
+                        if(value == mainValue){
+                            _game.mergeTile(value, value*2, i, col, row, col);
+                            board[i][col] = 0;
+                            board[row][col] = value*2;
+                            _count--;
+                            continue mainloop;
+                        }else{
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+
     /** Return true iff the current game is over (no more moves
      *  possible). */
     boolean gameOver() {
         // FIXME?
         if (_count == SIZE*SIZE) {
+            int s = SIZE-1;
             for(int row = 0 ; row < SIZE-1; row ++){
                 for(int col = 0; col < SIZE-1; col++){
 
@@ -128,7 +172,7 @@ public class Main {
 
                     if(target == rightOfTarget || target == belowTarget){
                         return true;
-                    }else if (_board[SIZE][SIZE]== _board[SIZE-1][SIZE] || _board[SIZE][SIZE] == _board[SIZE][SIZE-1]){
+                    }else if (_board[s][s]== _board[s-1][s] || _board[s][s] == _board[s][s-1]){
                         return true;
                     }
                 }
@@ -154,8 +198,8 @@ public class Main {
                 int[] randomTile = _game.getRandomTile();
                 _game.addTile(randomTile[0], randomTile[1], randomTile[2]);
                 added = true;
-                _board[randomTile[1]][randomTile[2]] = randomTile[0];
                 _count++;
+                _board[randomTile[1]][randomTile[2]] = randomTile[0];
             }catch(IllegalArgumentException badArg){
                 continue;
             }
