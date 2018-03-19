@@ -9,7 +9,7 @@ import java.util.InputMismatchException;
 public class Game {
 
     /** Probability of choosing 2 as random tile (as opposed to 4). */
-    static final double LOW_TILE_PROBABILITY = 0.6;
+    static final double LOW_TILE_PROBABILITY = 0.9;
 
     /** A new ROWS x ROWS Game whose window title is TITLE.  SEED is a seed for
      *  the PRNG, or 0 to indicate random seeding.  LOG is true iff all keys

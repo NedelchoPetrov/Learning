@@ -83,7 +83,6 @@ public class Main {
             // FIXME?
 
             /**Set a random tile at the beginning of the game**/
-            //setRandomPiece();
 
             if (gameOver()) {
                 // FIXME?
@@ -93,10 +92,6 @@ public class Main {
             while (true) {
                 setRandomPiece();
                 String key = _game.readKey();
-
-                moveUp(_board);
-                _game.displayMoves();
-                System.out.println(_count);
 
                 switch (key) {
                 case "Up": case "Down": case "Left": case "Right":
@@ -118,7 +113,7 @@ public class Main {
     }
 
     /**Executes all possible moves in direction Up.**/
-    void moveUp(int[][] board){
+    void moveUp(int[][] board, Side side){
         for (int col = 0; col < SIZE; col ++){
             mainloop:
             for (int row = 0; row < SIZE; row ++){
@@ -127,7 +122,9 @@ public class Main {
                     for (int i = row + 1; i < SIZE; i++){
                         int value = board[i][col];
                         if (value != 0){
-                            _game.moveTile(value, i, col, row, col);
+                            //_game.moveTile(value, i, col, row, col);
+                            _game.moveTile(value, tiltRow(side, i, col), tiltCol(side, i, col), tiltRow(side, row, col), tiltCol(side, row, col));
+                            _game.displayMoves();
                             board[i][col] = 0;
                             board[row][col] = value;
                             row--;
@@ -141,7 +138,9 @@ public class Main {
                             continue;
                         }
                         if(value == mainValue){
-                            _game.mergeTile(value, value*2, i, col, row, col);
+                            //_game.mergeTile(value, value*2, i, col, row, col);
+                            _game.mergeTile(value, value*2,tiltRow(side, i, col), tiltCol(side, i, col), tiltRow(side, row, col), tiltCol(side, row, col));
+                            _game.displayMoves();
                             board[i][col] = 0;
                             board[row][col] = value*2;
                             _count--;
@@ -214,17 +213,27 @@ public class Main {
          * north.  That way, you can re-use the same logic for all
          * directions.  (As usual, you don't have to). */
         int[][] board = new int[SIZE][SIZE];
-        // FIXME?
+        // FIXME? ... Should be fine
 
         for (int r = 0; r < SIZE; r += 1) {
             for (int c = 0; c < SIZE; c += 1) {
                 board[r][c] =
                     _board[tiltRow(side, r, c)][tiltCol(side, r, c)];
-                // FIXME?
+                // FIXME? ...Should be fine
             }
         }
 
+
+        for (int r = 0; r < SIZE; r++){
+            for (int c = 0; c < SIZE; c ++){
+                System.out.print(board[r][c] + " | ");
+            }
+            System.out.println("");
+        }
+
         // FIXME?
+        moveUp(board, side);
+        _game.displayMoves();
 
         for (int r = 0; r < SIZE; r += 1) {
             for (int c = 0; c < SIZE; c += 1) {
@@ -294,6 +303,22 @@ public class Main {
             return EAST;
         default:
             throw new IllegalArgumentException("unknown key designation");
+        }
+    }
+
+    /** Return the opposite Side. */
+    Side oppositeSide(Side side) {
+        switch (side) {
+            case NORTH:
+                return NORTH;
+            case SOUTH:
+                return NORTH;
+            case EAST:
+                return WEST;
+            case WEST:
+                return EAST;
+            default:
+                throw new IllegalArgumentException("unknown side");
         }
     }
 
