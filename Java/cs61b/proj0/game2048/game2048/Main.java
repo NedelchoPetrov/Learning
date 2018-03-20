@@ -81,29 +81,40 @@ public class Main {
 
         while (true) {
             // FIXME?
+            System.out.println("Main loop");
+            setRandomPiece();
+            setRandomPiece();
+            /**Set two random tiles at the beginning of the game**/
 
-            /**Set a random tile at the beginning of the game**/
-
+            /* Code from the skeleton that I didn't use
             if (gameOver()) {
                 // FIXME?
             }
-
+            */
         GetMove:
             while (true) {
-                setRandomPiece();
                 String key = _game.readKey();
 
                 switch (key) {
                 case "Up": case "Down": case "Left": case "Right":
                     if (!gameOver() && tiltBoard(keyToSide(key))) {
-                        break GetMove;
+                        setRandomPiece();
+                    }else if(gameOver()){
+                        _game.endGame();
                     }
 
                     break;
                 // FIXME?
 
+                case "New Game":
+                    _game.endGame();
+                    _game.clear();
+                    clear();
+                    break GetMove;
+
                 case "Quit":
                     return false;
+
                 default:
                     break;
                 }
@@ -113,7 +124,8 @@ public class Main {
     }
 
     /**Executes all possible moves in direction Up.**/
-    void moveUp(int[][] board, Side side){
+    boolean moveUp(int[][] board, Side side){
+        boolean result = false;
         for (int col = 0; col < SIZE; col ++){
             mainloop:
             for (int row = 0; row < SIZE; row ++){
@@ -122,9 +134,8 @@ public class Main {
                     for (int i = row + 1; i < SIZE; i++){
                         int value = board[i][col];
                         if (value != 0){
-                            //_game.moveTile(value, i, col, row, col);
                             _game.moveTile(value, tiltRow(side, i, col), tiltCol(side, i, col), tiltRow(side, row, col), tiltCol(side, row, col));
-                            _game.displayMoves();
+                            result = true;
                             board[i][col] = 0;
                             board[row][col] = value;
                             row--;
@@ -138,9 +149,16 @@ public class Main {
                             continue;
                         }
                         if(value == mainValue){
-                            //_game.mergeTile(value, value*2, i, col, row, col);
                             _game.mergeTile(value, value*2,tiltRow(side, i, col), tiltCol(side, i, col), tiltRow(side, row, col), tiltCol(side, row, col));
-                            _game.displayMoves();
+                            result = true;
+                            _score += value*2;
+                            if(_score > _maxScore){
+                                _maxScore = _score;
+                            }
+                            if(value == 1024 ){
+                                _game.endGame();
+                            }
+                            _game.setScore(_score,_maxScore);
                             board[i][col] = 0;
                             board[row][col] = value*2;
                             _count--;
@@ -152,14 +170,12 @@ public class Main {
                 }
             }
         }
+        return result;
     }
-
-
 
     /** Return true iff the current game is over (no more moves
      *  possible). */
     boolean gameOver() {
-        // FIXME?
         if (_count == SIZE*SIZE) {
             int s = SIZE-1;
             for(int row = 0 ; row < SIZE-1; row ++){
@@ -170,13 +186,14 @@ public class Main {
                     int belowTarget = _board[row+1][col];
 
                     if(target == rightOfTarget || target == belowTarget){
-                        return true;
-                    }else if (_board[s][s]== _board[s-1][s] || _board[s][s] == _board[s][s-1]){
-                        return true;
+                        return false;
                     }
                 }
+                if (_board[s][row]== _board[s][row+1] || _board[row][s] == _board[row+1][s]){
+                    return false;
+                }
             }
-
+        return true;
 
         }
         return false;
@@ -188,8 +205,6 @@ public class Main {
         if (_count == SQUARES) {
             return;
         }
-        // FIXME? ...Done
-
         /** Add a Tile to an empty slot. **/
         boolean added = false;
         while(!added) {
@@ -213,26 +228,23 @@ public class Main {
          * north.  That way, you can re-use the same logic for all
          * directions.  (As usual, you don't have to). */
         int[][] board = new int[SIZE][SIZE];
-        // FIXME? ... Should be fine
 
         for (int r = 0; r < SIZE; r += 1) {
             for (int c = 0; c < SIZE; c += 1) {
                 board[r][c] =
                     _board[tiltRow(side, r, c)][tiltCol(side, r, c)];
-                // FIXME? ...Should be fine
             }
         }
-
-
+/* Print the board with these lines
         for (int r = 0; r < SIZE; r++){
             for (int c = 0; c < SIZE; c ++){
                 System.out.print(board[r][c] + " | ");
             }
             System.out.println("");
         }
-
-        // FIXME?
-        moveUp(board, side);
+*/
+        boolean result = moveUp(board, side);
+        _game.setScore(_score,_maxScore);
         _game.displayMoves();
 
         for (int r = 0; r < SIZE; r += 1) {
@@ -241,8 +253,7 @@ public class Main {
                     = board[r][c];
             }
         }
-        // FIXME?
-        return true;
+        return result;
     }
 
     /** Return the row number on a playing board that corresponds to row R
@@ -303,22 +314,6 @@ public class Main {
             return EAST;
         default:
             throw new IllegalArgumentException("unknown key designation");
-        }
-    }
-
-    /** Return the opposite Side. */
-    Side oppositeSide(Side side) {
-        switch (side) {
-            case NORTH:
-                return NORTH;
-            case SOUTH:
-                return NORTH;
-            case EAST:
-                return WEST;
-            case WEST:
-                return EAST;
-            default:
-                throw new IllegalArgumentException("unknown side");
         }
     }
 
