@@ -81,7 +81,7 @@ public class Main {
 
         while (true) {
             // FIXME?
-            System.out.println("Main loop");
+            //System.out.println("Main loop");
             setRandomPiece();
             setRandomPiece();
             /**Set two random tiles at the beginning of the game**/
