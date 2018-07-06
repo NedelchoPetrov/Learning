@@ -121,6 +121,7 @@ public class TestLinkedListDeque {
 
         list2.addFirst("Miu");
         list2.addFirst("Meow");
+
         list2.removeLast();
 
         assertEquals(13, i);
