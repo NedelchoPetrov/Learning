@@ -1,9 +1,11 @@
-public class ArrayDeque<E> {
+public class ArrayDeque<E> implements Deque<E>{
 
     public E[] items;
     int size;
     int first;
     int last;
+
+
 
     public ArrayDeque(){
         this.items = (E[]) new Object[8];
@@ -12,6 +14,8 @@ public class ArrayDeque<E> {
         this.last = 1;
     }
 
+
+    @Override
     public void addFirst(E item){
         items[first] = item;
         size += 1;
@@ -28,6 +32,8 @@ public class ArrayDeque<E> {
         }
     }
 
+
+    @Override
     public void addLast(E item){
         items[last] = item;
         size += 1;
@@ -44,6 +50,7 @@ public class ArrayDeque<E> {
         return;
     }
 
+
     public void resize(){
         //TODO: Check for bug with firstpart negative;
         E[] newArray = (E[]) new Object[items.length*2];
@@ -56,6 +63,8 @@ public class ArrayDeque<E> {
         last = size;
     }
 
+
+    @Override
     public boolean isEmpty(){
         if(size == 0){
             return true;
@@ -64,9 +73,12 @@ public class ArrayDeque<E> {
         }
     }
 
+
+    @Override
     public int size(){
         return size;
     }
+
 
     public String printDequeHelper(){
         String result = "";
@@ -98,6 +110,15 @@ public class ArrayDeque<E> {
         }
     }
 
+
+    @Override
+    public void printDeque(){
+        String result = printDequeHelper();
+        System.out.println(result);
+    }
+
+
+    @Override
     public E removeFirst(){
             if(size == 0){
                 return null;
@@ -113,6 +134,8 @@ public class ArrayDeque<E> {
             }
     }
 
+
+    @Override
     public E removeLast(){
         E result;
         if(size == 0){
@@ -129,6 +152,8 @@ public class ArrayDeque<E> {
         }
     }
 
+
+    @Override
     public E get(int pos){
         if(pos >= items.length){
             return null;

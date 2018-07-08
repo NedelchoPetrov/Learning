@@ -1,7 +1,8 @@
-public class LinkedListDeque<E> {
+public class LinkedListDeque<E> implements Deque<E>{
 
     public DLNode sentinel;
     public int size;
+
 
 
     //Constructor
@@ -13,7 +14,10 @@ public class LinkedListDeque<E> {
         size = 0;
     }
 
+
+
     //Adds element to the beginning fo the deque
+    @Override
     public void addFirst(E item){
         DLNode<E> node = new DLNode<E>(this.sentinel, this.sentinel.next, item);
         this.sentinel.next.previous = node;
@@ -27,7 +31,9 @@ public class LinkedListDeque<E> {
 
     }
 
+
     //Adds element to the end of the deque
+    @Override
     public void addLast(E item){
         DLNode<E> node = new DLNode<E>(this.sentinel.previous, this.sentinel, item);
         this.sentinel.previous.next = node;
@@ -40,7 +46,9 @@ public class LinkedListDeque<E> {
         }
     }
 
+
     //Checks if deque is empty
+    @Override
     public boolean isEmpty(){
         if(this.sentinel.next == this.sentinel){
             return true;
@@ -49,7 +57,9 @@ public class LinkedListDeque<E> {
         }
     }
 
+
     //Return the size of a deque
+    @Override
     public int size(){
         return this.size;
     }
@@ -74,11 +84,14 @@ public class LinkedListDeque<E> {
         return result;
     }
 
+
+    @Override
     public void printDeque(){
         System.out.println(this.printDequeHelper());
     }
 
 
+    @Override
     public E removeFirst(){
 
         if(this.size == 0){
@@ -93,6 +106,8 @@ public class LinkedListDeque<E> {
 
     }
 
+
+    @Override
     public E removeLast(){
         if (this.size == 0){
             return null;
@@ -108,6 +123,7 @@ public class LinkedListDeque<E> {
     }
 
 
+    @Override
     public E get(int pos){
         DLNode node = new DLNode();
         node = this.sentinel;
@@ -138,6 +154,7 @@ public class LinkedListDeque<E> {
             return getRecursiveHelper(pos -1, node.next);
         }
     }
+
 
 
     //Helper class
