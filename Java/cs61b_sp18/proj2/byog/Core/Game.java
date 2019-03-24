@@ -15,7 +15,7 @@ public class Game {
     public static final int WIDTH = 80;
     public static final int HEIGHT = 30;
 
-    private static final int SEED = 1111345; //1111345 is cool
+    private static final int SEED = 11113457; //1111345, 11113457 are cool
     public static final Random RANDOM = new Random(SEED);
     private static final int roomsCount = generateRandomCountOfRooms();
 
@@ -76,6 +76,63 @@ public class Game {
         return coords;
     }
 
+    public ArrayList<Room> generateRandomRooms(ArrayList<XYCoords> coords){
+        ArrayList<Room> rooms = new ArrayList<>();
+
+        for(int i = 0; i < roomsCount; i += 1){
+            Room newRoom = new Room(coords.get(i));
+            newRoom.roomExpandRandomizer();
+        }
+        return rooms;
+    }
+
+    /**
+     *
+     * @param world
+     * @param rooms
+     */
+    public void placeGoldenDoor(TETile[][] world, ArrayList<Room> rooms){
+        int randomRoom = RANDOM.nextInt(roomsCount);
+        boolean goodSpot = false;
+        XYCoords current = new XYCoords(rooms.get(randomRoom).center.xPos,rooms.get(randomRoom).center.yPos);
+        //TODO: check pass by value
+          int xIncrement = 0;
+          int yIncrement = 0;
+
+          switch (randomRoom % 4){
+              case 0: yIncrement = 1;
+              case 1: xIncrement = 1;
+              case 2: yIncrement = -1;
+              case 3: xIncrement = -1;
+          }
+
+          while(!goodSpot){
+              if(world[current.xPos][current.yPos] != Tileset.WALL){
+                  current.xPos += xIncrement;
+                  current.yPos += yIncrement;
+              }else if(world[current.xPos + 1][current.yPos] == Tileset.NOTHING ||
+                       world[current.xPos][current.yPos + 1] == Tileset.NOTHING ||
+                       world[current.xPos - 1][current.yPos] == Tileset.NOTHING ||
+                       world[current.xPos][current.yPos - 1] == Tileset.NOTHING ){
+                  goodSpot = true;
+                  world[current.xPos][current.yPos] = Tileset.LOCKED_DOOR;
+              }
+          }
+    }
+
+    //TODO:
+    public TETile[][] setupGame() {
+        TETile[][] world = new TETile[WIDTH][HEIGHT];
+
+        //Fill grid with !null
+        for (int x = 0; x < WIDTH; x += 1) {
+            for (int y = 0; y < HEIGHT; y += 1) {
+                world[x][y] = Tileset.NOTHING;
+            }
+        }
+        return world;
+    }
+
     public static void main(String[] args){
         Game game = new Game();
         game.ter.initialize(WIDTH, HEIGHT);
@@ -96,10 +153,6 @@ public class Game {
         for(int i = 0; i < roomsCount; i += 1){
             Room newRoom = new Room(coords.get(i));
             newRoom.roomExpandRandomizer();
-            //System.out.println(newRoom.bottomLeftCorner.xPos + ", " + newRoom.bottomLeftCorner.yPos);
-
-            newRoom.drawRoomFloor(world);
-            newRoom.drawRoomWalls(world);
 
             world[newRoom.center.xPos][newRoom.center.yPos] = Tileset.FLOWER;
             rooms.add(newRoom);
@@ -107,7 +160,12 @@ public class Game {
 
         rooms.sort(Room.xPosComparator);
 
-        for(int i = 0; i < rooms.size() - 1; i ++){
+        for(int i = 0; i < rooms.size(); i ++){
+            rooms.get(i).drawRoomFloor(world);
+            rooms.get(i).drawRoomWalls(world);
+        }
+
+        for(int i = 0; i < rooms.size()-1; i ++){
             rooms.get(i).drawPath(world, rooms.get(i+1));
         }
 
@@ -115,8 +173,7 @@ public class Game {
             world[rooms.get(i).center.xPos][rooms.get(i).center.yPos] = Tileset.FLOWER;
         }
 
-
+        game.placeGoldenDoor(world, rooms);
         game.ter.renderFrame(world);
-        //System.out.println("ti si moe lubimo heksagonche");
     }
 }

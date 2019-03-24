@@ -216,9 +216,9 @@ public class Room implements Comparable<Room> {
                         this.topRightCorner.yPos += 1;
                     }
                 }
-            System.out.print(this.center.printC() + " | ");
-            System.out.print(this.bottomLeftCorner.printC() + " | ");
-            System.out.println(this.topRightCorner.printC());
+            //System.out.print(this.center.printC() + " | ");
+            //System.out.print(this.bottomLeftCorner.printC() + " | ");
+            //System.out.println(this.topRightCorner.printC());
                 repeat = repeatExpansionRandomizer();
             }
         this.putRoomBackInMap();
