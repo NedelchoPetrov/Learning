@@ -5,6 +5,7 @@ import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 import edu.princeton.cs.introcs.StdOut;
 
+import java.awt.image.AreaAveragingScaleFilter;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
@@ -18,6 +19,8 @@ public class Game {
     private static final int SEED = 11113457; //1111345, 11113457 are cool
     public static final Random RANDOM = new Random(SEED);
     private static final int roomsCount = generateRandomCountOfRooms();
+
+
 
     /**
      * Method used for playing a fresh game. The game should start from the main menu.
@@ -41,8 +44,30 @@ public class Game {
         // TODO: Fill out this method to run the game using the input passed in,
         // and return a 2D tile representation of the world that would have been
         // drawn if the same inputs had been given to playWithKeyboard().
+        TETile[][] world  = setupGame();
+        ArrayList<XYCoords> roomCoords = generateRandomCoordinates();
+        ArrayList<Room> rooms = generateRandomRooms(roomCoords);
 
-        TETile[][] finalWorldFrame = null;
+        rooms.sort(Room.xPosComparator);
+
+        for(int i = 0; i < rooms.size(); i ++){
+            rooms.get(i).drawRoomFloor(world);
+            rooms.get(i).drawRoomWalls(world);
+        }
+
+        for(int i = 0; i < rooms.size()-1; i ++){
+            rooms.get(i).drawPath(world, rooms.get(i+1));
+        }
+
+        for(int i = 0; i < rooms.size(); i ++){
+            world[rooms.get(i).center.xPos][rooms.get(i).center.yPos] = Tileset.FLOWER;
+        }
+
+        placeGoldenDoor(world, rooms);
+
+
+
+        TETile[][] finalWorldFrame = world;
         return finalWorldFrame;
     }
 
@@ -82,6 +107,7 @@ public class Game {
         for(int i = 0; i < roomsCount; i += 1){
             Room newRoom = new Room(coords.get(i));
             newRoom.roomExpandRandomizer();
+            rooms.add(newRoom);
         }
         return rooms;
     }
@@ -91,7 +117,7 @@ public class Game {
      * @param world
      * @param rooms
      */
-    public void placeGoldenDoor(TETile[][] world, ArrayList<Room> rooms){
+    public static void placeGoldenDoor(TETile[][] world, ArrayList<Room> rooms){
         int randomRoom = RANDOM.nextInt(roomsCount);
         boolean goodSpot = false;
         XYCoords current = new XYCoords(rooms.get(randomRoom).center.xPos,rooms.get(randomRoom).center.yPos);
@@ -120,10 +146,10 @@ public class Game {
           }
     }
 
-    //TODO:
+    //TODO: rename and remake function so that it's not misleading
     public TETile[][] setupGame() {
         TETile[][] world = new TETile[WIDTH][HEIGHT];
-
+        this.ter.initialize(WIDTH, HEIGHT);
         //Fill grid with !null
         for (int x = 0; x < WIDTH; x += 1) {
             for (int y = 0; y < HEIGHT; y += 1) {
@@ -133,6 +159,8 @@ public class Game {
         return world;
     }
 
+    //Main function for testing
+/*
     public static void main(String[] args){
         Game game = new Game();
         game.ter.initialize(WIDTH, HEIGHT);
@@ -147,7 +175,7 @@ public class Game {
             }
         }
 
-        //TODO
+
         ArrayList<Room> rooms = new ArrayList<>();
 
         for(int i = 0; i < roomsCount; i += 1){
@@ -175,5 +203,7 @@ public class Game {
 
         game.placeGoldenDoor(world, rooms);
         game.ter.renderFrame(world);
+
     }
+    */
 }

@@ -11,9 +11,11 @@ public class Main {
         if (args.length > 1) {
             System.out.println("Can only have one argument - the input string");
             System.exit(0);
-        } else if (args.length == 1) {
+        } else if (args.length == 0) {
             Game game = new Game();
-            TETile[][] worldState = game.playWithInputString(args[0]);
+            //ETile[][] worldState = game.playWithInputString(args[0]);
+            TETile[][] worldState = game.playWithInputString("");
+            game.ter.renderFrame(worldState);
             System.out.println(TETile.toString(worldState));
         } else {
             Game game = new Game();
