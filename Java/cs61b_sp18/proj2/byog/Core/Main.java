@@ -1,6 +1,7 @@
 package byog.Core;
 
 import byog.TileEngine.TETile;
+import edu.princeton.cs.introcs.StdDraw;
 
 /** This is the main entry point for the program. This class simply parses
  *  the command line inputs, and lets the byog.Core.Game class take over
@@ -13,10 +14,23 @@ public class Main {
             System.exit(0);
         } else if (args.length == 0) {
             Game game = new Game();
-            //ETile[][] worldState = game.playWithInputString(args[0]);
+            //TETile[][] worldState = game.playWithInputString(args[0]);
             TETile[][] worldState = game.playWithInputString("");
+
             game.ter.renderFrame(worldState);
+
+            game.showMousePointerInfo("Monitor");
+
             System.out.println(TETile.toString(worldState));
+            while(true){
+                game.followMouse(worldState);
+                try {
+                    Thread.sleep(250);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
         } else {
             Game game = new Game();
             game.playWithKeyboard();

@@ -3,8 +3,14 @@ package byog.Core;
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
+import edu.princeton.cs.introcs.StdDraw;
 import edu.princeton.cs.introcs.StdOut;
 
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.AreaAveragingScaleFilter;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -16,9 +22,12 @@ public class Game {
     public static final int WIDTH = 80;
     public static final int HEIGHT = 30;
 
-    private static final int SEED = 11113457; //1111345, 11113457 are cool
+    private static final int SEED = 11113456; //1111345, 11113457 are cool
     public static final Random RANDOM = new Random(SEED);
     private static final int roomsCount = generateRandomCountOfRooms();
+    private Player player = new Player();
+
+
 
 
 
@@ -59,16 +68,41 @@ public class Game {
             rooms.get(i).drawPath(world, rooms.get(i+1));
         }
 
+        //Put FLOWER on each room center
         for(int i = 0; i < rooms.size(); i ++){
             world[rooms.get(i).center.xPos][rooms.get(i).center.yPos] = Tileset.FLOWER;
         }
 
         placeGoldenDoor(world, rooms);
+        placePlayer(world, rooms);
 
 
 
         TETile[][] finalWorldFrame = world;
         return finalWorldFrame;
+    }
+
+    /**
+     * Method for displaying mouseover infos.
+     */
+    public void showMousePointerInfo(String string){
+        Font font = new Font("Monaco", Font.BOLD, 14);
+        StdDraw.setFont(font);
+        StdDraw.setPenColor(Color.WHITE);
+        StdDraw.textLeft(3, HEIGHT + 2, "You are looking at " + string);
+        StdDraw.show();
+    }
+
+    //
+    public void followMouse(TETile[][] world){
+        int xPos = (int)Math.floor(StdDraw.mouseX());
+        int yPos = (int)Math.floor(StdDraw.mouseY());
+        if(xPos < this.WIDTH && yPos < this.HEIGHT){
+            String tile = world[xPos][yPos].description();
+            StdDraw.clear();
+            this.ter.renderFrame(world);
+            this.showMousePointerInfo(tile);
+        }
     }
 
     /**
@@ -101,6 +135,11 @@ public class Game {
         return coords;
     }
 
+    /**
+     * Takes a list with room centers and generates rooms of random sizes aorund them.
+     * @param coords
+     * @return
+     */
     public ArrayList<Room> generateRandomRooms(ArrayList<XYCoords> coords){
         ArrayList<Room> rooms = new ArrayList<>();
 
@@ -117,7 +156,7 @@ public class Game {
      * @param world
      * @param rooms
      */
-    public static void placeGoldenDoor(TETile[][] world, ArrayList<Room> rooms){
+    public void placeGoldenDoor(TETile[][] world, ArrayList<Room> rooms){
         int randomRoom = RANDOM.nextInt(roomsCount);
         boolean goodSpot = false;
         XYCoords current = new XYCoords(rooms.get(randomRoom).center.xPos,rooms.get(randomRoom).center.yPos);
@@ -145,12 +184,29 @@ public class Game {
               }
           }
     }
+    //TODO: implement
+    public void placePlayer(TETile[][] world, ArrayList<Room> rooms){
+        int startingRoomIndex = RANDOM.nextInt(roomsCount);
+        Room startingRoom = rooms.get(startingRoomIndex);
+        int xBound = startingRoom.topRightCorner.xPos - startingRoom.bottomLeftCorner.xPos + 1;
+        int yBound = startingRoom.topRightCorner.yPos - startingRoom.bottomLeftCorner.yPos + 1;
 
-    //TODO: rename and remake function so that it's not misleading
-    public TETile[][] setupGame() {
-        TETile[][] world = new TETile[WIDTH][HEIGHT];
-        this.ter.initialize(WIDTH, HEIGHT);
-        //Fill grid with !null
+        int playerXPos = RANDOM.nextInt(xBound) + startingRoom.bottomLeftCorner.xPos;
+        int playerYPos = RANDOM.nextInt(yBound) + startingRoom.bottomLeftCorner.yPos;
+
+        if(world[playerXPos][playerYPos].equals(Tileset.FLOOR)||world[playerXPos][playerYPos].equals(Tileset.FLOWER)){
+            player.position.xPos = playerXPos;
+            player.position.yPos = playerYPos;
+            player.previousTile = world[playerXPos][playerYPos];
+            world[playerXPos][playerYPos] = Tileset.PLAYER;
+        }else{
+            System.out.println("Error by placing player");
+        }
+
+        //world[startingRoom.center.xPos][startingRoom.center.yPos] = Tileset.PLAYER;
+    }
+
+    public TETile[][] fillWorldWithNothing(TETile[][] world){
         for (int x = 0; x < WIDTH; x += 1) {
             for (int y = 0; y < HEIGHT; y += 1) {
                 world[x][y] = Tileset.NOTHING;
@@ -159,14 +215,19 @@ public class Game {
         return world;
     }
 
+    //TODO: rename and remake function so that it's not misleading
+    public TETile[][] setupGame() {
+        TETile[][] world = new TETile[WIDTH][HEIGHT];
+        this.ter.initialize(WIDTH, HEIGHT + 3);
+        world = fillWorldWithNothing(world);
+        return world;
+    }
+
     //Main function for testing
 /*
     public static void main(String[] args){
         Game game = new Game();
         game.ter.initialize(WIDTH, HEIGHT);
-        ArrayList<XYCoords> coords = game.generateRandomCoordinates();
-
-
         //Fill grid with !null
         TETile[][] world = new TETile[WIDTH][HEIGHT];
         for (int x = 0; x < WIDTH; x += 1) {
