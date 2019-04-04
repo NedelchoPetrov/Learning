@@ -25,7 +25,7 @@ public class Game {
     private static final int SEED = 11113456; //1111345, 11113457 are cool
     public static final Random RANDOM = new Random(SEED);
     private static final int roomsCount = generateRandomCountOfRooms();
-    private Player player = new Player();
+    public Player player = new Player();
 
 
 
@@ -76,8 +76,6 @@ public class Game {
         placeGoldenDoor(world, rooms);
         placePlayer(world, rooms);
 
-
-
         TETile[][] finalWorldFrame = world;
         return finalWorldFrame;
     }
@@ -90,19 +88,16 @@ public class Game {
         StdDraw.setFont(font);
         StdDraw.setPenColor(Color.WHITE);
         StdDraw.textLeft(3, HEIGHT + 2, "You are looking at " + string);
-        StdDraw.show();
     }
 
-    //
-    public void followMouse(TETile[][] world){
-        int xPos = (int)Math.floor(StdDraw.mouseX());
-        int yPos = (int)Math.floor(StdDraw.mouseY());
+    public String followMouse(TETile[][] world, int xPos, int yPos){
+        //int xPos = (int)Math.floor(StdDraw.mouseX());
+        //int yPos = (int)Math.floor(StdDraw.mouseY());
+        String tile = "";
         if(xPos < this.WIDTH && yPos < this.HEIGHT){
-            String tile = world[xPos][yPos].description();
-            StdDraw.clear();
-            this.ter.renderFrame(world);
-            this.showMousePointerInfo(tile);
+            tile = world[xPos][yPos].description();
         }
+        return tile;
     }
 
     /**
@@ -130,7 +125,7 @@ public class Game {
              if(xy.xPos == 0){xy.xPos += 1;}
              if(xy.yPos == 0){xy.yPos += 1;}
 
-            coords.add(xy);
+             coords.add(xy);
         }
         return coords;
     }
@@ -184,7 +179,12 @@ public class Game {
               }
           }
     }
-    //TODO: implement
+
+    /**
+     * Choses a random room in the world, then choses a random FLOOR location in that room and places player there.
+     * @param world
+     * @param rooms
+     */
     public void placePlayer(TETile[][] world, ArrayList<Room> rooms){
         int startingRoomIndex = RANDOM.nextInt(roomsCount);
         Room startingRoom = rooms.get(startingRoomIndex);
@@ -202,10 +202,21 @@ public class Game {
         }else{
             System.out.println("Error by placing player");
         }
-
-        //world[startingRoom.center.xPos][startingRoom.center.yPos] = Tileset.PLAYER;
     }
 
+    public void displayVictoryMessage(){
+        Font font = new Font("Monaco", Font.BOLD, 40);
+        StdDraw.setFont(font);
+        StdDraw.setPenColor(Color.WHITE);
+        StdDraw.text(WIDTH/2, HEIGHT + 1, "Victory!");
+        StdDraw.show();
+    }
+
+    /**
+     * Fill all tiles in the world with Tileset.NOTHING, to avoid NullPointerExceptions.
+     * @param world
+     * @return
+     */
     public TETile[][] fillWorldWithNothing(TETile[][] world){
         for (int x = 0; x < WIDTH; x += 1) {
             for (int y = 0; y < HEIGHT; y += 1) {
@@ -223,48 +234,51 @@ public class Game {
         return world;
     }
 
-    //Main function for testing
-/*
-    public static void main(String[] args){
-        Game game = new Game();
-        game.ter.initialize(WIDTH, HEIGHT);
-        //Fill grid with !null
-        TETile[][] world = new TETile[WIDTH][HEIGHT];
-        for (int x = 0; x < WIDTH; x += 1) {
-            for (int y = 0; y < HEIGHT; y += 1) {
-                world[x][y] = Tileset.NOTHING;
+    /**
+     * Waiting for player input and checking for win conditions.
+     * @param world
+     */
+    public void waitForInput(TETile[][] world){
+        boolean change = false;
+        int oldX = (int)Math.floor(StdDraw.mouseX());
+        int oldY = (int)Math.floor(StdDraw.mouseY());
+        String underMouse = "Monitor";
+
+        while(true){
+            int newX = (int)Math.floor(StdDraw.mouseX());
+            int newY = (int)Math.floor(StdDraw.mouseY());
+            if(oldX != newX || oldY != newY){
+                change = true;
+                oldX = newX;
+                oldY = newY;
+                underMouse = this.followMouse(world, newX, newY);
+            }
+
+            if(StdDraw.hasNextKeyTyped()){
+                change = true;
+                char c = StdDraw.nextKeyTyped();
+                this.player.move(world, c);
+            }
+
+            if(change){
+                this.ter.renderFrame(world);
+                player.showScore();
+                this.showMousePointerInfo(underMouse);
+                StdDraw.show();
+                change = false;
+            }
+
+            if(player.winCondition){
+                displayVictoryMessage();
+                StdDraw.show();
+                break;
+            }
+
+            try {
+                Thread.sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
-
-
-        ArrayList<Room> rooms = new ArrayList<>();
-
-        for(int i = 0; i < roomsCount; i += 1){
-            Room newRoom = new Room(coords.get(i));
-            newRoom.roomExpandRandomizer();
-
-            world[newRoom.center.xPos][newRoom.center.yPos] = Tileset.FLOWER;
-            rooms.add(newRoom);
-        }
-
-        rooms.sort(Room.xPosComparator);
-
-        for(int i = 0; i < rooms.size(); i ++){
-            rooms.get(i).drawRoomFloor(world);
-            rooms.get(i).drawRoomWalls(world);
-        }
-
-        for(int i = 0; i < rooms.size()-1; i ++){
-            rooms.get(i).drawPath(world, rooms.get(i+1));
-        }
-
-        for(int i = 0; i < rooms.size(); i ++){
-            world[rooms.get(i).center.xPos][rooms.get(i).center.yPos] = Tileset.FLOWER;
-        }
-
-        game.placeGoldenDoor(world, rooms);
-        game.ter.renderFrame(world);
-
     }
-    */
 }

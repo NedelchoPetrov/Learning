@@ -2,7 +2,6 @@ package byog.Core;
 
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
-
 import java.util.Comparator;
 
 public class Room implements Comparable<Room> {
@@ -121,7 +120,6 @@ public class Room implements Comparable<Room> {
         putSingleWall(world, xPos - 1, yPos - 1);
     }
 
-
     /**
      * Draws a path and the walls on it's sides between two Rooms using for loops.
      * Currently, without randomness, prioritizes the horizontal direction.
@@ -216,14 +214,10 @@ public class Room implements Comparable<Room> {
                         this.topRightCorner.yPos += 1;
                     }
                 }
-            //System.out.print(this.center.printC() + " | ");
-            //System.out.print(this.bottomLeftCorner.printC() + " | ");
-            //System.out.println(this.topRightCorner.printC());
                 repeat = repeatExpansionRandomizer();
             }
         this.putRoomBackInMap();
         }
-
 
         private static class XPosComparator implements Comparator<Room>{
             @Override

@@ -144,7 +144,5 @@ public class MemoryGame {
                 drawFrame("Game Over! You made it to round " + round, "");
             }
         }
-
     }
-
 }

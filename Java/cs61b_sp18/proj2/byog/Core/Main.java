@@ -21,15 +21,8 @@ public class Main {
 
             game.showMousePointerInfo("Monitor");
 
-            System.out.println(TETile.toString(worldState));
-            while(true){
-                game.followMouse(worldState);
-                try {
-                    Thread.sleep(250);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+            //System.out.println(TETile.toString(worldState));
+            game.waitForInput(worldState);
 
         } else {
             Game game = new Game();
