@@ -2,9 +2,11 @@ package byog.Core;
 
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
+
+import java.io.Serializable;
 import java.util.Comparator;
 
-public class Room implements Comparable<Room> {
+public class Room implements Comparable<Room>, Serializable {
 
     public XYCoords center = null;
     public XYCoords bottomLeftCorner = null;

@@ -1,6 +1,8 @@
 package byog.Core;
 
-public class XYCoords {
+import java.io.Serializable;
+
+public class XYCoords implements Serializable {
 
     public int xPos;
     public int yPos;

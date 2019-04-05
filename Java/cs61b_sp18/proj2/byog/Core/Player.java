@@ -5,8 +5,9 @@ import byog.TileEngine.Tileset;
 import edu.princeton.cs.introcs.StdDraw;
 
 import java.awt.*;
+import java.io.Serializable;
 
-public class Player {
+public class Player implements Serializable {
     public TETile previousTile = Tileset.FLOOR;
     XYCoords position = new XYCoords(0,0);
     int score = 0;
@@ -50,6 +51,8 @@ public class Player {
             newPos.xPos -= 1;
         }else if(direction == 'd'){
             newPos.xPos += 1;
+        }else if(direction == 'q'){
+            System.exit(0);
         }
 
         if(checkMove(newPos.xPos, newPos.yPos, world)){

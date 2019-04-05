@@ -15,14 +15,14 @@ public class Main {
         } else if (args.length == 0) {
             Game game = new Game();
             //TETile[][] worldState = game.playWithInputString(args[0]);
-            TETile[][] worldState = game.playWithInputString("");
+            TETile[][] worldState = Game.playWithInputString("", game);
 
-            game.ter.renderFrame(worldState);
+            //game.ter.renderFrame(worldState);
 
-            game.showMousePointerInfo("Monitor");
+            //game.showMousePointerInfo("Monitor");
 
             //System.out.println(TETile.toString(worldState));
-            game.waitForInput(worldState);
+            //game.waitForInput();
 
         } else {
             Game game = new Game();
